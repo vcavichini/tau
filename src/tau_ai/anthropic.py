@@ -725,9 +725,14 @@ def _apply_anthropic_session_affinity_headers(
     affinity_format: str | None,
 ) -> None:
     """Send stable session affinity for gateways that opt in via compat."""
-    if not session_id or affinity_format != "opencode":
+    if session_id is None or affinity_format is None:
         return
-    headers["x-opencode-session"] = session_id
+    if affinity_format == "openrouter":
+        headers["x-session-id"] = session_id
+    elif affinity_format == "opencode":
+        headers["x-opencode-session"] = session_id
+    elif affinity_format == "openai":
+        headers["session_id"] = session_id
 
 
 def _parse_sse_line(line: str) -> str | None:
